@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from openai import AzureOpenAI
+from openai import OpenAI
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 from harness.tools import registry
@@ -11,21 +11,20 @@ load_dotenv()
 for name in (
     "AZURE_OPENAI_ENDPOINT",
     "AZURE_OPENAI_DEPLOYMENT",
-    "AZURE_OPENAI_API_VERSION",
 ):
     if not os.getenv(name, "").strip():
         raise ValueError(f"Set {name} in .env before running the agent.")
 
 MODEL = os.environ["AZURE_OPENAI_DEPLOYMENT"]
+endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
 credential = DefaultAzureCredential()
 token_provider = get_bearer_token_provider(
     credential,
-    "https://cognitiveservices.azure.com/.default",
+    "https://ai.azure.com/.default",
 )
-client = AzureOpenAI(
-    azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-    api_version=os.environ["AZURE_OPENAI_API_VERSION"],
-    azure_ad_token_provider=token_provider,
+client = OpenAI(
+    base_url=endpoint,
+    api_key=token_provider,
 )
 
 SYSTEM_PROMPT = """

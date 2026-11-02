@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Harness",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "harness.agent",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}\\.env",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
