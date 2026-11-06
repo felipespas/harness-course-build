@@ -45,6 +45,15 @@ python -m harness.agent
 Type `quit` or `exit` to stop. Blank required Azure settings produce a startup
 error identifying the setting to fill in.
 
+### Debugging in VS Code
+
+Install the Microsoft Python and Python Debugger extensions, then use
+**Python: Select Interpreter** to select the virtual environment created during
+setup. Set breakpoints, select **Debug Agent Harness** in Run and Debug, and
+press **F5**. The configuration in [.vscode/launch.json](.vscode/launch.json)
+runs `harness.agent` from the repository root, loads `.env`, and accepts input
+in the integrated terminal. The same Azure setup and sign-in are required.
+
 If Foundry reports that the token tenant does not match the resource tenant,
 sign in to the resource's tenant and select its subscription before restarting:
 
