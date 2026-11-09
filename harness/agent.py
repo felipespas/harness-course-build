@@ -2,28 +2,31 @@ import os
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 from harness.tools import registry
 from harness.memory import load_agents_md
 
 load_dotenv()
 
-# Decide which backend to use based on which key is set in .env.
-# This is a configuration-time choice — change .env, not code.
-if os.getenv("KIMI_API_KEY"):
-    MODEL = "kimi-k2.6"
-    client = OpenAI(
-        api_key=os.getenv("KIMI_API_KEY"),
-        base_url=os.getenv("KIMI_BASE_URL"),
-    )
-    # K2.6 supports thinking and non-thinking modes. We disable thinking
-    # to keep response shape identical to OpenAI — no reasoning_content
-    # to handle, no preservation requirements in multi-turn dispatch.
-    EXTRA_BODY = {"thinking": {"type": "disabled"}}
-else:
-    MODEL = "gpt-4o-mini"
-    client = OpenAI()  # Reads OPENAI_API_KEY from environment, default base URL.
-    EXTRA_BODY = {}
+for name in (
+    "AZURE_OPENAI_ENDPOINT",
+    "AZURE_OPENAI_DEPLOYMENT",
+):
+    if not os.getenv(name, "").strip():
+        raise ValueError(f"Set {name} in .env before running the agent.")
+
+MODEL = os.environ["AZURE_OPENAI_DEPLOYMENT"]
+endpoint = os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/")
+credential = DefaultAzureCredential()
+token_provider = get_bearer_token_provider(
+    credential,
+    "https://ai.azure.com/.default",
+)
+client = OpenAI(
+    base_url=endpoint,
+    api_key=token_provider,
+)
 
 SYSTEM_PROMPT = """
 You are a coding assistant running in a terminal, helping a developer with software engineering tasks.
@@ -100,7 +103,6 @@ def run():
         response = client.chat.completions.create(
             model=MODEL,
             messages=messages,
-            extra_body=EXTRA_BODY,
             tools= registry.get_schemas()
         )
 

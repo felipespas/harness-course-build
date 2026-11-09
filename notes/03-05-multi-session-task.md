@@ -7,6 +7,8 @@
     - Task Description
         
         > "Help me write a one-page document about the history of git — its origins, the problem it was created to solve, and why it became dominant. Take research notes as you go in a `notes/` directory and produce the final summary as `git-history.md`."
+
+        > "Help me write a one-page document about the history of git — its origins, the problem it was created to solve, and why it became dominant. Take research notes as you go in a `notes/` directory and produce the final summary as `git-history.md`. Let's start by you outlining what areas we should cover.
         > 
     - A few things worth noticing about this task:
         - **It's open-ended.** The agent has to plan its own decomposition. No turn-by-turn instructions from the user.
