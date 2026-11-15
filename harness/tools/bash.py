@@ -122,7 +122,8 @@ def bash(command: str) -> str:
     than 0 are surfaced with a [bash exit N] prefix so the model can
     recognize failures and recover.
 
-    Commands are subject to the allow-list and deny-list policy defined at the top of this module. If the policy refuses a command, an error
+    Commands are subject to the allow-list and deny-list policy defined at the top of this module. 
+    If the policy refuses a command, an error
     is returned instead of executing it.
     """
 
