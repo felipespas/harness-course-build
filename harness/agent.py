@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 from harness.tools import registry
 from harness.config import MODEL, STEP_BUDGET
@@ -17,9 +18,24 @@ from harness.memory import (
 
 load_dotenv()
 
-# Decide which backend to use based on which key is set in .env.
+# Azure settings take precedence; otherwise keep the original backends.
 # This is a configuration-time choice — change .env, not code.
-if os.getenv("KIMI_API_KEY"):
+if "AZURE_OPENAI_ENDPOINT" in os.environ or "AZURE_OPENAI_DEPLOYMENT" in os.environ:
+    for name in ("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT"):
+        if not os.getenv(name, "").strip():
+            raise ValueError(f"Set {name} in .env before running the agent.")
+
+    MODEL = os.environ["AZURE_OPENAI_DEPLOYMENT"].strip()
+    credential = DefaultAzureCredential()
+    token_provider = get_bearer_token_provider(
+        credential, "https://ai.azure.com/.default"
+    )
+    client = OpenAI(
+        base_url=os.environ["AZURE_OPENAI_ENDPOINT"].strip().rstrip("/"),
+        api_key=token_provider,
+    )
+    EXTRA_BODY = {}
+elif os.getenv("KIMI_API_KEY"):
     
     client = OpenAI(
         api_key=os.getenv("KIMI_API_KEY"),

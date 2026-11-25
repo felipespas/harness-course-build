@@ -12,9 +12,11 @@ venv/
 env/
 
 # Editor / OS noise
-.vscode/
+.vscode/*
+!.vscode/launch.json
 .idea/
 .DS_Store
 
 # Others
 workspace/
+az-login.ps1
